@@ -1,0 +1,101 @@
+﻿@model Unidad2Act.Models.ViewModel.DiosesViewModel
+@{
+    ViewData["Title"] = "Dioses";
+    Layout = "Layout";
+}
+
+<main>
+    <section class="dioses-codice">
+        <h2>Panteón de Dioses</h2>
+
+        <div class="civilizacion-links">
+            <p>Selecciona una civilización para explorar sus deidades:</p>
+            <div class="links-container">
+                @foreach(var civ in Model.Civilizaciones)
+                {
+                    var activeClass = (civ.ToLower() == Model.CivilizacionSeleccionada.ToLower()) ? "active" : "";
+                    <a asp-controller="Home" href="~/Home/Dioses?civilizacion=@civ" asp-action="Dioses" asp-route-civilizacion="@civ" class="civilizacion-link @activeClass">@civ</a>
+                }
+
+            </div>
+        </div>
+
+        <div class="decorative-border"></div>
+
+        <div class="dioses-gallery">
+            @foreach(var d in Model.Dioses)
+            {
+                <div class="dios-item" data-dios-id="@d.Id">
+                    <div class="dios-mini">
+                        <img src="~/imagenes/@(d.Nombre.ToLower())_estatua.png" alt="@d.Nombre">
+                        <span>@d.Nombre</span>
+                    </div>
+                </div>
+            }
+        </div>  
+
+        <div class="detalles-container">
+            <div class="ningun-dios">
+                <p>Selecciona una civilización y haz clic en un dios para ver sus detalles</p>
+            </div>
+            @foreach(var di in Model.Dioses)
+            {
+                <div class="dios-detalles" data-dios-id="@di.Id" style="display:none;">
+                    <div class="detalles-superior">
+                        <img src="~/imagenes/@(di.Nombre.ToLower()).png" alt="@di.Nombre" class="dios-imagen-grande">
+                        <div class="dios-info">
+                            <h3>@di.Nombre</h3>
+                            <p><strong>Civilización:</strong> @di.Civilizacion</p>
+                            <p><strong>Género:</strong> @di.Genero</p>
+                            <p><strong>Dominio:</strong> @di.Dominio</p>
+                            <p><strong>Representación:</strong> @di.Representacion</p>
+                        </div>
+                    </div>
+                    <div class="detalles-inferior">
+                        <div class="dios-descripcion">
+                            <p>@di.Descripcion</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="decorative-border"></div>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const detallesContainer = document.querySelector('.detalles-container');
+        const diosesGallery = document.querySelector('.dioses-gallery');
+        const ningunDios = document.querySelector('.ningun-dios');
+        const detallesDioses = document.querySelectorAll('.dios-detalles');
+
+        function inicializarDetalles() {
+            detallesDioses.forEach(detalle => {
+                detalle.style.display = 'none';
+            });
+            ningunDios.style.display = 'block';
+        }
+
+        inicializarDetalles();
+
+        diosesGallery.addEventListener('click', function (e) {
+            const diosItem = e.target.closest('.dios-item');
+
+            if (diosItem) {
+                const diosId = diosItem.getAttribute('data-dios-id');
+
+                detallesDioses.forEach(detalle => {
+                    detalle.style.display = 'none';
+                });
+                ningunDios.style.display = 'none';
+
+                const detalles = document.querySelector(`.dios-detalles[data-dios-id="${diosId}"]`);
+                if (detalles) {
+                    detalles.style.display = 'block';
+                }
+            }
+        });
+    });
+</script>
